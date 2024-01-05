@@ -1,0 +1,42 @@
+import pandas as pd
+import geopandas as gpd
+import matplotlib.pyplot as plt
+from shapely.geometry import Point
+
+def read_grow_locations(grow_file_path):
+    #Reading the csv file into a dataframe
+    df = pd.read_csv(grow_file_path)
+
+    #Creating a GeoDataFrame from the dataframe
+    geometry = [Point(xy) for xy in zip(df['Longitude'], df['Latitude'])]
+    gdf = gpd.GeoDataFrame(df, geometry=geometry, crs='EPSG:4326')
+
+    return gdf
+
+def plot_sensor_locations(sensor_locations, map_image_path):
+    #Using geopandas to plot the map
+    fig, ax = plt.subplots(figsize=(10, 10))
+
+    #Plotting the sensor locations on the map
+    sensor_locations.plot(ax=ax, markersize=50, color='red', alpha=0.7)
+
+    #Loading the map
+    map_img = plt.imread(map_image_path)
+    ax.imshow(map_img, extent=[-10.592, 1.6848, 50.681, 57.985], transform=ax.transData, alpha=0.5)
+
+    plt.title('GROW Sensor Locations')
+    plt.xlabel('Longitude')
+    plt.ylabel('Latitude')
+
+    #Displaying the plot
+    plt.show()
+
+#Links to required datasets
+grow_file_path = r'\Users\CCumm\OneDrive\Documents\AC50002\2nd Python Assignment\GrowLocations.csv'
+map_image_path = r'\Users\CCumm\OneDrive\Documents\AC50002\2nd Python Assignment\map7.png'
+
+#Reading sensor locations
+sensor_locations = read_grow_locations(grow_file_path)
+
+#Plotting sensor locations and displaying map
+plot_sensor_locations(sensor_locations, map_image_path)
